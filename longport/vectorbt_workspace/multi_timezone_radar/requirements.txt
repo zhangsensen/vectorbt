@@ -1,0 +1,45 @@
+# 港股全时间框架抗过拟合因子分析 - Python 3.11兼容
+
+# 核心数据处理 (Python 3.11兼容版本)
+pandas>=2.0.0,<3.0.0
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0,<2.0.0
+
+# 量化回测 (Python 3.11兼容版本)
+vectorbt>=0.28.0,<1.0.0
+
+# 技术分析 (Python 3.11兼容版本)
+TA-Lib>=0.4.0
+
+# 并行处理
+concurrent.futures>=3.1.1
+
+# 可视化
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# 进度条
+tqdm>=4.64.0
+
+# 类型检查
+typing-extensions>=4.0.0
+
+# 性能优化
+numba>=0.56.0
+
+# 日志和配置
+pyyaml>=6.0
+
+# 测试
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# 开发工具
+black>=22.0.0
+flake8>=5.0.0
+mypy>=0.991
+
+# 可选依赖（用于特定功能）
+# scikit-learn>=1.1.0  # 用于机器学习因子
+# plotly>=5.0.0        # 用于交互式图表
+# dash>=2.0.0          # 用于Web界面

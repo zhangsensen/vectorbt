@@ -1,0 +1,139 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每天早上9点运行（UTC时间，对应北京时间17点）
+    - cron: '0 1 * * *'
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libxml2-dev \
+          libxslt-dev \
+          zlib1g-dev \
+          libjpeg-dev \
+          libfreetype6-dev \
+          liblcms2-dev \
+          libwebp-dev \
+          tcl8.6-dev \
+          tk8.6-dev \
+          python3-tk
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy vectorbt ta-lib psutil tqdm
+        pip install pytest pytest-cov
+    
+    - name: Run smoke test
+      run: |
+        python smoke_test.py
+    
+    - name: Test full analysis (limited scope)
+      run: |
+        python run_53_stocks_sequential.py --stock 0005.HK --max-tests 5
+    
+    - name: Upload smoke test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: smoke-test-results
+        path: |
+          logs/
+        retention-days: 7
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety
+    
+    - name: Check for security vulnerabilities
+      run: |
+        safety check --json || true
+    
+    - name: Check dependency freshness
+      run: |
+        pip list --outdated --format=columns
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort
+    
+    - name: Check code formatting with black
+      run: |
+        black --check . || echo "Code formatting issues found. Run 'black .' to fix."
+      continue-on-error: true
+    
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only . || echo "Import sorting issues found. Run 'isort .' to fix."
+      continue-on-error: true
+    
+    - name: Lint with flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      continue-on-error: true
+
+  notification:
+    needs: [smoke-test, dependency-check, code-quality]
+    runs-on: ubuntu-latest
+    if: always() && (needs.smoke-test.result == 'failure' || needs.dependency-check.result == 'failure')
+    
+    steps:
+    - name: Send failure notification
+      run: |
+        echo "CI pipeline failed! Check the logs above for details."
+        echo "Smoke test status: ${{ needs.smoke-test.result }}"
+        echo "Dependency check status: ${{ needs.dependency-check.result }}"
+        echo "Code quality status: ${{ needs.code-quality.result }}"
