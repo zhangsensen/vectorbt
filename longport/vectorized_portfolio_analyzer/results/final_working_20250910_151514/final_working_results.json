@@ -1,0 +1,236 @@
+{
+  "execution_time": 364.51199984550476,
+  "analysis_approach": "final_working_vectorbt",
+  "tested_symbols": [
+    "0700.HK",
+    "0005.HK",
+    "0388.HK",
+    "1211.HK",
+    "0981.HK",
+    "2015.HK",
+    "0291.HK",
+    "9888.HK",
+    "0340.HK",
+    "2018.HK",
+    "0939.HK",
+    "9988.HK",
+    "3896.HK",
+    "1088.HK",
+    "9999.HK",
+    "1398.HK",
+    "2628.HK",
+    "2020.HK",
+    "9878.HK",
+    "3690.HK",
+    "3988.HK",
+    "1952.HK",
+    "0857.HK",
+    "1801.HK",
+    "2899.HK",
+    "0883.HK",
+    "0020.HK",
+    "1810.HK",
+    "2331.HK",
+    "2382.HK",
+    "6181.HK",
+    "9633.HK",
+    "2269.HK",
+    "9618.HK",
+    "1818.HK",
+    "0175.HK",
+    "3968.HK",
+    "0992.HK",
+    "0941.HK",
+    "1299.HK",
+    "3330.HK",
+    "1288.HK",
+    "2333.HK",
+    "2318.HK",
+    "2097.HK",
+    "6160.HK",
+    "1024.HK",
+    "9868.HK",
+    "3033.HK",
+    "3908.HK",
+    "9992.HK",
+    "1548.HK",
+    "6030.HK",
+    "1729.HK"
+  ],
+  "tested_timeframes": [
+    "1m",
+    "2m",
+    "3m",
+    "5m",
+    "10m",
+    "15m",
+    "30m",
+    "1h",
+    "4h",
+    "1d"
+  ],
+  "working_config": {
+    "test_timeframes": [
+      "1m",
+      "2m",
+      "3m",
+      "5m",
+      "10m",
+      "15m",
+      "30m",
+      "1h",
+      "4h",
+      "1d"
+    ],
+    "max_symbols": 54,
+    "evaluation_mode": "cta",
+    "min_ic_threshold": 0.005,
+    "min_ir_threshold": 0.01,
+    "min_sample_size": 10,
+    "min_supporting_stocks": 2,
+    "full_factor_pool": true,
+    "debug_mode": true
+  },
+  "timeframe_results": {
+    "1m": {
+      "timeframe": "1m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK    smart_money_flow           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2641  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2642  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2643  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2644  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2645  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2646 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 49,
+        "total_evaluations": 2646,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "2m": {
+      "timeframe": "2m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK    smart_money_flow           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2641  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2642  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2643  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2644  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2645  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2646 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 49,
+        "total_evaluations": 2646,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "3m": {
+      "timeframe": "3m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK    smart_money_flow           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2641  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2642  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2643  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2644  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2645  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2646 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 49,
+        "total_evaluations": 2646,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "5m": {
+      "timeframe": "5m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK    smart_money_flow           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2641  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2642  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2643  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2644  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2645  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2646 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 49,
+        "total_evaluations": 2646,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "10m": {
+      "timeframe": "10m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK            willr_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2803  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2804  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2805  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2806  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2807  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2808 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 52,
+        "total_evaluations": 2808,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "15m": {
+      "timeframe": "15m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK            willr_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2803  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2804  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2805  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2806  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2807  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2808 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 52,
+        "total_evaluations": 2808,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "30m": {
+      "timeframe": "30m",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK            willr_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2803  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2804  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2805  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2806  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2807  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2808 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 52,
+        "total_evaluations": 2808,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "1h": {
+      "timeframe": "1h",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK            willr_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2803  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2804  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2805  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2806  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2807  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2808 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 52,
+        "total_evaluations": 2808,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "4h": {
+      "timeframe": "4h",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK            willr_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK  macd_enhanced_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2799  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2800  1729.HK         rsi_14_rank           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2801  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2802  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2803  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2804 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 52,
+        "total_evaluations": 2804,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    },
+    "1d": {
+      "timeframe": "1d",
+      "cta_results": "       symbol              factor  total_return  sharpe  win_rate  ...  max_drawdown  trades  avg_trade_return  signal_strength                                       data_quality\n0     0700.HK  zscore_momentum_20           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n1     0700.HK           hl_spread           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2     0700.HK     liquidity_proxy           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n3     0700.HK    smart_money_flow           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n4     0700.HK         skewness_60           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n...       ...                 ...           ...     ...       ...  ...           ...     ...               ...              ...                                                ...\n2425  1729.HK              roc_12           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2426  1729.HK        rsi_enhanced           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2427  1729.HK              adx_14           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2428  1729.HK    volatility_ratio           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n2429  1729.HK           stoch_rsi           0.0     0.0       0.0  ...           0.0       0               0.0              0.0  failed: VectorBT回测失败: module 'pandas' has no a...\n\n[2430 rows x 11 columns]",
+      "factor_ranking": "Empty DataFrame\nColumns: []\nIndex: []",
+      "valid_factors": "Empty DataFrame\nColumns: []\nIndex: []",
+      "summary": {
+        "tested_symbols": 54,
+        "tested_factors": 45,
+        "total_evaluations": 2430,
+        "valid_factors_count": 0,
+        "best_factor": null,
+        "best_sharpe": 0
+      }
+    }
+  }
+}
