@@ -1,0 +1,3 @@
+vectorbt[full]
+pyarrow
+anywidget
