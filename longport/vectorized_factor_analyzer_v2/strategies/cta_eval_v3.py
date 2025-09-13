@@ -24,6 +24,7 @@ import hashlib
 import pickle
 import psutil
 import os
+import gc
 warnings.filterwarnings('ignore')
 
 
@@ -252,22 +253,61 @@ class CTAEvaluatorV3:
             win_rate, profit_loss_ratio, avg_trade_return = self._calculate_trade_metrics(trades_df)
             max_drawdown = pf.max_drawdown()
             
-            # ✅ 修复10: 适度的年化处理
+            # 🔥 修复11: 计算真实的年化收益率和波动率
             annual_factor = self._get_annual_factor(timeframe)
+            
+            # 计算真实年化收益率：基于VectorBT的total_return
+            try:
+                # 获取真实的年化收益率
+                if hasattr(pf, 'annualized_return'):
+                    annual_return = pf.annualized_return()
+                else:
+                    # 手动年化：从总收益率推算
+                    trading_periods = len(price.dropna())
+                    if trading_periods > 0:
+                        periods_per_year = self._get_periods_per_year(timeframe)
+                        annual_return = ((1 + total_return) ** (periods_per_year / trading_periods)) - 1
+                    else:
+                        annual_return = total_return
+                
+                # 计算真实年化波动率
+                returns = price.pct_change().dropna()
+                if len(returns) > 1:
+                    periods_per_year = self._get_periods_per_year(timeframe)
+                    annual_volatility = returns.std() * np.sqrt(periods_per_year)
+                else:
+                    annual_volatility = 0.1  # 默认值
+                
+                # 基于真实数据重新计算夏普率
+                if annual_volatility > 0:
+                    corrected_sharpe = annual_return / annual_volatility
+                else:
+                    corrected_sharpe = 0.0
+                    
+            except Exception as vol_error:
+                # 如果计算失败，使用保守估算
+                annual_return = total_return  # 不年化，直接使用总收益
+                annual_volatility = 0.15  # 保守的15%波动率估算
+                corrected_sharpe = annual_return / annual_volatility if annual_volatility > 0 else 0.0
+            
+            # 适度的年化处理（仅用于原有逻辑兼容）
             annual_sharpe = sharpe / annual_factor if annual_factor > 1 else sharpe
             
             quality_flag = "needs_review"
-            if sharpe > 0:
+            if corrected_sharpe > 0:
                 quality_flag = "positive_returns"
-            if annual_sharpe > 0.5:
+            if corrected_sharpe > 0.5:
                 quality_flag = "good_annual_sharpe"
-            if annual_sharpe > 2:
+            if corrected_sharpe > 2:
                 quality_flag = "excellent"
             
             result = {
                 'total_return': float(total_return),
-                'sharpe': float(annual_sharpe),  # 返回年化后的
-                'raw_sharpe': float(sharpe),     # 保留原始的用于调试
+                'annual_return': float(annual_return),      # 🔥 新增：真实年化收益率
+                'annual_volatility': float(annual_volatility), # 🔥 新增：真实年化波动率
+                'sharpe': float(annual_sharpe),              # 保持原有逻辑兼容
+                'sharpe_corrected': float(corrected_sharpe), # 🔥 新增：基于真实数据的夏普率
+                'raw_sharpe': float(sharpe),                 # 保留原始的用于调试
                 'win_rate': float(win_rate),
                 'profit_loss_ratio': float(profit_loss_ratio),
                 'max_drawdown': float(max_drawdown),
@@ -323,6 +363,22 @@ class CTAEvaluatorV3:
         
         return np.sqrt(adjusted_periods)
     
+    def _get_periods_per_year(self, timeframe: str) -> float:
+        """获取每年的交易周期数（用于年化收益率和波动率计算）"""
+        periods_per_year = {
+            '1m': 252 * 240,      # 1分钟(假设4小时交易日)
+            '2m': 252 * 120,      # 2分钟
+            '3m': 252 * 80,       # 3分钟
+            '5m': 252 * 48,       # 5分钟(4小时交易日)
+            '10m': 252 * 24,      # 10分钟
+            '15m': 252 * 16,      # 15分钟
+            '30m': 252 * 8,       # 30分钟
+            '1h': 252 * 4,        # 1小时
+            '4h': 252,            # 4小时(等于1个交易日)
+            '1d': 252             # 1天
+        }
+        return periods_per_year.get(timeframe, 252 * 48)
+    
     def _calculate_trade_metrics(self, trades_df) -> Tuple[float, float, float]:
         """计算交易指标"""
         if len(trades_df) == 0:
@@ -355,10 +411,11 @@ class CTAEvaluatorV3:
     def _empty_result(self, reason: str = "数据不足") -> Dict[str, Any]:
         """返回空结果"""
         return {
-            'total_return': 0.0, 'sharpe': 0.0, 'raw_sharpe': 0.0, 'win_rate': 0.0,
-            'profit_loss_ratio': 0.0, 'max_drawdown': 0.0, 'trades': 0,
-            'avg_trade_return': 0.0, 'signal_strength': 0.0, 'signal_count': 0,
-            'data_quality': f'failed: {reason}', 'annual_factor': 1.0
+            'total_return': 0.0, 'annual_return': 0.0, 'annual_volatility': 0.15,
+            'sharpe': 0.0, 'sharpe_corrected': 0.0, 'raw_sharpe': 0.0, 
+            'win_rate': 0.0, 'profit_loss_ratio': 0.0, 'max_drawdown': 0.0, 
+            'trades': 0, 'avg_trade_return': 0.0, 'signal_strength': 0.0, 
+            'signal_count': 0, 'data_quality': f'failed: {reason}', 'annual_factor': 1.0
         }
     
     def batch_evaluate(self, symbols: List[str], factor_data: Dict[str, pd.DataFrame],
@@ -425,7 +482,7 @@ class CTAEvaluatorV3:
                         continue
                     
                     try:
-                        if task_count % 100 == 0:  # 每100个任务报告一次进度
+                        if task_count % 500 == 0:  # 每500个任务报告一次进度
                             print(f"📊 进度: {task_count}/{total_tasks} ({task_count/total_tasks*100:.1f}%)")
                         
                         # 🔑 关键修复：临时构建最小数据集，避免大量copy
@@ -440,11 +497,14 @@ class CTAEvaluatorV3:
                             **score
                         })
                         
-                        # 🔍 内存监控：每100个任务报告一次内存使用
-                        if task_count % 100 == 0:
+                        # 🔍 内存监控：每500个任务报告一次内存使用
+                        if task_count % 500 == 0:
                             current_memory = process.memory_info().rss / 1024 / 1024
                             memory_increase = current_memory - initial_memory
                             print(f"💾 内存使用: {current_memory:.1f} MB (增加: {memory_increase:.1f} MB)")
+                            
+                            # 🚀 主动垃圾回收：每500个任务清理一次
+                            gc.collect()
                         
                     except Exception as e:
                         print(f"❌ {symbol}-{factor_name}: {str(e)}")

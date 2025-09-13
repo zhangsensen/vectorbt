@@ -20,7 +20,7 @@ class CategoricalDtypeFixer:
     def _setup_logger(self):
         """设置日志"""
         import logging
-        logger = logging.getLogger(f"{__name__}.CategoricalFixer")
+        logger = logging.getLogger("{}.CategoricalFixer".format(__name__))
         logger.setLevel(logging.INFO)
         return logger
     
@@ -34,7 +34,7 @@ class CategoricalDtypeFixer:
         Returns:
             修复后的DataFrame
         """
-        print(f"🔧 开始修复Categorical数据类型...")
+        print("🔧 开始修复Categorical数据类型...")
         
         if df.empty:
             return df
@@ -49,7 +49,7 @@ class CategoricalDtypeFixer:
                 
                 # 检查是否为Categorical类型
                 if hasattr(col_data, 'dtype') and col_data.dtype.name == 'category':
-                    print(f"   发现Categorical列: {col}")
+                    print("   发现Categorical列: {}".format(col))
                     categorical_columns.append(col)
                     
                     # 尝试转换为数值
@@ -61,51 +61,51 @@ class CategoricalDtypeFixer:
                             # 将-1（NaN的code）转换为真正的NaN
                             numeric_data = numeric_data.replace(-1, np.nan)
                             fixed_df[col] = numeric_data
-                            print(f"   ✅ {col}: 成功转换为数值 (使用category codes)")
+                            print("   ✅ {}: 成功转换为数值 (使用category codes)".format(col))
                             
                         else:
                             # 方法2: 强制转换为数值
                             fixed_df[col] = pd.to_numeric(col_data, errors='coerce')
-                            print(f"   ✅ {col}: 成功转换为数值 (强制转换)")
+                            print("   ✅ {}: 成功转换为数值 (强制转换)".format(col))
                             
                     except Exception as convert_error:
-                        print(f"   ⚠️ {col}: 转换失败，尝试备用方法")
+                        print("   ⚠️ {}: 转换失败，尝试备用方法".format(col))
                         
                         # 方法3: 转换为字符串再转数值
                         try:
                             str_data = col_data.astype(str)
                             numeric_data = pd.to_numeric(str_data, errors='coerce')
                             fixed_df[col] = numeric_data
-                            print(f"   ✅ {col}: 备用方法成功")
+                            print("   ✅ {}: 备用方法成功".format(col))
                         except Exception as backup_error:
-                            print(f"   ❌ {col}: 所有转换方法均失败 - {backup_error}")
+                            print("   ❌ {}: 所有转换方法均失败 - {}".format(col, backup_error))
                             conversion_errors.append(col)
                             # 删除无法转换的列
                             fixed_df = fixed_df.drop(columns=[col])
                 
                 # 确保所有列都是数值类型
                 elif not pd.api.types.is_numeric_dtype(fixed_df[col]):
-                    print(f"   发现非数值列: {col}, 尝试转换")
+                    print("   发现非数值列: {}, 尝试转换".format(col))
                     try:
                         fixed_df[col] = pd.to_numeric(fixed_df[col], errors='coerce')
-                        print(f"   ✅ {col}: 非数值列转换成功")
+                        print("   ✅ {}: 非数值列转换成功".format(col))
                     except Exception as e:
-                        print(f"   ❌ {col}: 非数值列转换失败 - {e}")
+                        print("   ❌ {}: 非数值列转换失败 - {}".format(col, e))
                         conversion_errors.append(col)
                         fixed_df = fixed_df.drop(columns=[col])
                         
             except Exception as e:
-                print(f"   ❌ 处理列 {col} 时出错: {e}")
+                print("   ❌ 处理列 {} 时出错: {}".format(col, e))
                 conversion_errors.append(col)
                 continue
         
-        print(f"   修复结果:")
-        print(f"   - 发现Categorical列: {len(categorical_columns)}个")
-        print(f"   - 转换失败列: {len(conversion_errors)}个")
-        print(f"   - 最终有效列: {len(fixed_df.columns)}个")
+        print("   修复结果:")
+        print("   - 发现Categorical列: {}个".format(len(categorical_columns)))
+        print("   - 转换失败列: {}个".format(len(conversion_errors)))
+        print("   - 最终有效列: {}个".format(len(fixed_df.columns)))
         
         if conversion_errors:
-            print(f"   转换失败的列: {conversion_errors}")
+            print("   转换失败的列: {}".format(conversion_errors))
             
         return fixed_df
     
@@ -119,7 +119,7 @@ class CategoricalDtypeFixer:
         Returns:
             (validated_df, validation_report)
         """
-        print(f"🔍 开始数值类型验证...")
+        print("🔍 开始数值类型验证...")
         
         if df.empty:
             return df, {'status': 'empty', 'issues': []}
@@ -141,20 +141,20 @@ class CategoricalDtypeFixer:
                 
                 # 检查数据类型
                 if not pd.api.types.is_numeric_dtype(col_data):
-                    issues.append(f"列 {col} 不是数值类型: {col_data.dtype}")
+                    issues.append("列 {} 不是数值类型: {}".format(col, col_data.dtype))
                     problematic_factors.append(col)
                     continue
                 
                 # 检查是否全为NaN
                 if col_data.dropna().empty:
-                    issues.append(f"列 {col} 全为NaN")
+                    issues.append("列 {} 全为NaN".format(col))
                     problematic_factors.append(col)
                     continue
                 
                 # 检查常量列
                 unique_count = col_data.dropna().nunique()
                 if unique_count <= 1:
-                    issues.append(f"列 {col} 为常量 (unique={unique_count})")
+                    issues.append("列 {} 为常量 (unique={})".format(col, unique_count))
                     problematic_factors.append(col)
                     continue
                 
@@ -162,18 +162,18 @@ class CategoricalDtypeFixer:
                 try:
                     col_std = col_data.dropna().std()
                     if pd.isna(col_std) or col_std < 1e-8:
-                        issues.append(f"列 {col} 变异性过低 (std={col_std})")
+                        issues.append("列 {} 变异性过低 (std={})".format(col, col_std))
                         problematic_factors.append(col)
                         continue
                 except Exception as std_error:
-                    issues.append(f"列 {col} std计算失败: {std_error}")
+                    issues.append("列 {} std计算失败: {}".format(col, std_error))
                     problematic_factors.append(col)
                     continue
                 
                 valid_factors.append(col)
                 
             except Exception as e:
-                issues.append(f"列 {col} 验证失败: {e}")
+                issues.append("列 {} 验证失败: {}".format(col, e))
                 problematic_factors.append(col)
                 continue
         
@@ -191,17 +191,17 @@ class CategoricalDtypeFixer:
             'success_rate': len(valid_factors) / len(factor_columns) if factor_columns else 1.0
         }
         
-        print(f"   验证结果:")
-        print(f"   - 原始列数: {validation_report['original_columns']}")
-        print(f"   - 有效列数: {validation_report['final_columns']}")
-        print(f"   - 成功率: {validation_report['success_rate']:.1%}")
+        print("   验证结果:")
+        print("   - 原始列数: {}".format(validation_report['original_columns']))
+        print("   - 有效列数: {}".format(validation_report['final_columns']))
+        print("   - 成功率: {:.1%}".format(validation_report['success_rate']))
         
         if issues:
-            print(f"   - 发现问题: {len(issues)}个")
+            print("   - 发现问题: {}个".format(len(issues)))
             for issue in issues[:5]:  # 只显示前5个问题
-                print(f"     • {issue}")
+                print("     • {}".format(issue))
             if len(issues) > 5:
-                print(f"     • ... 还有{len(issues)-5}个问题")
+                print("     • ... 还有{}个问题".format(len(issues)-5))
         
         return final_df, validation_report
     
@@ -215,7 +215,7 @@ class CategoricalDtypeFixer:
         Returns:
             (fixed_df, fix_report)
         """
-        print(f"🛠️ 开始综合修复...")
+        print("🛠️ 开始综合修复...")
         
         if df.empty:
             return df, {'status': 'empty'}
@@ -245,11 +245,11 @@ class CategoricalDtypeFixer:
             }
         }
         
-        print(f"🎯 综合修复完成:")
-        print(f"   原始: {comprehensive_report['original_shape']}")
-        print(f"   最终: {comprehensive_report['final_shape']}")
-        print(f"   移除率: {comprehensive_report['data_quality']['removal_rate']:.1%}")
-        print(f"   可用性: {'✅' if comprehensive_report['data_quality']['final_usable'] else '❌'}")
+        print("🎯 综合修复完成:")
+        print("   原始: {}".format(comprehensive_report['original_shape']))
+        print("   最终: {}".format(comprehensive_report['final_shape']))
+        print("   移除率: {:.1%}".format(comprehensive_report['data_quality']['removal_rate']))
+        print("   可用性: {}".format('✅' if comprehensive_report['data_quality']['final_usable'] else '❌'))
         
         return validated_df, comprehensive_report
 
@@ -268,18 +268,18 @@ def test_categorical_fixer():
         'nan_factor': [np.nan, np.nan, np.nan, np.nan, np.nan]
     })
     
-    print(f"测试数据类型:")
+    print("测试数据类型:")
     print(test_data.dtypes)
     
     fixer = CategoricalDtypeFixer()
     fixed_data, report = fixer.comprehensive_fix(test_data)
     
-    print(f"\n修复后数据类型:")
+    print("\n修复后数据类型:")
     print(fixed_data.dtypes)
     
-    print(f"\n修复报告:")
+    print("\n修复报告:")
     for key, value in report.items():
-        print(f"  {key}: {value}")
+        print("  {}: {}".format(key, value))
     
     return fixed_data, report
 
