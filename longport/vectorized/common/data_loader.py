@@ -43,6 +43,19 @@ class MultiTimeframeDataLoader:
     """Load OHLCV parquet files and synthesise higher timeframes when required."""
 
     BASE_COLUMNS: Tuple[str, ...] = ("open", "high", "low", "close", "volume")
+    SUPPORTED_TIMEFRAMES: Tuple[str, ...] = (
+        "1m",
+        "2m",
+        "3m",
+        "5m",
+        "10m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "4h",
+        "1d",
+    )
     COLUMN_MAPPING: Mapping[str, str] = {
         "Open": "open",
         "High": "high",

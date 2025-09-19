@@ -1,3 +1,5 @@
 """Vectorized portfolio analyzer package."""
 
-__all__ = []
+from .core.main_analyzer import FinalWorkingVectorBT
+
+__all__ = ["FinalWorkingVectorBT"]

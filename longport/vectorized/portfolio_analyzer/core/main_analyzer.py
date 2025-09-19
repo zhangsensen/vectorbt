@@ -6,17 +6,19 @@
 基于已验证的单股票调试结果
 """
 
+import argparse
 import os
 import sys
 import time
 import json
 import logging
 import warnings
-import numpy as np
-import pandas as pd
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
+import pandas as pd
 import psutil
 
 # VectorBT和技术指标
@@ -28,20 +30,15 @@ except ImportError as e:
     print(f"❌ 导入错误: {e}")
     sys.exit(1)
 
-# 导入自定义模块
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
 from longport.vectorized.common.data_loader import MultiTimeframeDataLoader
 
-from factors.factor_pool import AdvancedFactorPool
-from utils.dtype_fixer import CategoricalDtypeFixer
-from strategies.cta_evaluator import CTAEvaluator
+from longport.vectorized.portfolio_analyzer.factors.factor_pool import AdvancedFactorPool
+from longport.vectorized.portfolio_analyzer.utils.dtype_fixer import CategoricalDtypeFixer
+from longport.vectorized.portfolio_analyzer.strategies.cta_evaluator import CTAEvaluator
 
 # 统计学库
 try:
@@ -61,7 +58,12 @@ class FinalWorkingVectorBT:
     基于调试结果，确保IC计算正常
     """
     
-    def __init__(self, data_dir: str = "../vectorbt_workspace/data", capital: float = 300000):
+    def __init__(
+        self,
+        data_dir: str = "../vectorbt_workspace/data",
+        capital: float = 300000,
+        timeframes: Optional[List[str]] = None,
+    ):
         self.data_dir = data_dir
         self.capital = capital
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -82,7 +84,10 @@ class FinalWorkingVectorBT:
             'full_factor_pool': True,
             'debug_mode': True
         }
-        
+
+        if timeframes is not None:
+            self.working_config['test_timeframes'] = list(timeframes)
+
         # 设置日志
         self._setup_logging()
         
@@ -986,12 +991,41 @@ class FinalWorkingVectorBT:
         with open(report_file, 'w', encoding='utf-8') as f:
             f.write(report_content)
 
-def main():
+def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    """Parse command line arguments."""
+
+    parser = argparse.ArgumentParser(description="Run the vectorized portfolio analyzer")
+    parser.add_argument(
+        "--data-dir",
+        default="../vectorbt_workspace/data",
+        help="Path that contains timeframe folders like 1m/, 5m/, 1d/.",
+    )
+    parser.add_argument(
+        "--capital",
+        type=float,
+        default=300000,
+        help="Initial capital used for CTA/IC analysis.",
+    )
+    parser.add_argument(
+        "--timeframes",
+        nargs="+",
+        help="Override the default timeframe list (e.g. --timeframes 1m 5m 1d).",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: Optional[List[str]] = None) -> None:
     """主函数"""
     # ✅修复4: 设置随机种子确保结果可复现
     np.random.seed(42)
-    
-    final_analyzer = FinalWorkingVectorBT()
+
+    args = _parse_args(argv)
+
+    final_analyzer = FinalWorkingVectorBT(
+        data_dir=args.data_dir,
+        capital=args.capital,
+        timeframes=args.timeframes,
+    )
     results = final_analyzer.run_final_test()
     
     if results:

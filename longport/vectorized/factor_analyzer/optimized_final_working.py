@@ -17,17 +17,19 @@ Author: Optimized VectorBT System V2
 Date: 2025-09-11
 """
 
+import argparse
 import os
 import sys
 import time
 import json
 import logging
 import warnings
-import numpy as np
-import pandas as pd
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
+import pandas as pd
 import psutil
 
 # VectorBT和技术指标
@@ -68,7 +70,12 @@ class OptimizedFinalWorking:
     基于原版逻辑，集成向量化优化
     """
     
-    def __init__(self, data_dir: str = "/Users/zhangshenshen/longport/vectorized/factor_analyzer/data", capital: float = 300000):
+    def __init__(
+        self,
+        data_dir: str = "/Users/zhangshenshen/longport/vectorized/factor_analyzer/data",
+        capital: float = 300000,
+        timeframes: Optional[List[str]] = None,
+    ):
         self.data_dir = data_dir
         self.capital = capital
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -89,7 +96,10 @@ class OptimizedFinalWorking:
             'full_factor_pool': True,
             'debug_mode': True
         }
-        
+
+        if timeframes is not None:
+            self.working_config['test_timeframes'] = list(timeframes)
+
         # 设置日志
         self._setup_logging()
         
@@ -624,16 +634,45 @@ class OptimizedFinalWorking:
         with open(report_file, 'w', encoding='utf-8') as f:
             f.write(report_content)
 
-def main():
+def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    """Parse command line arguments."""
+
+    parser = argparse.ArgumentParser(description="Run the vectorized factor analyzer")
+    parser.add_argument(
+        "--data-dir",
+        default="/Users/zhangshenshen/longport/vectorized/factor_analyzer/data",
+        help="Path that contains timeframe folders like 1m/, 5m/, 1d/.",
+    )
+    parser.add_argument(
+        "--capital",
+        type=float,
+        default=300000,
+        help="Initial capital used for CTA backtests.",
+    )
+    parser.add_argument(
+        "--timeframes",
+        nargs="+",
+        help="Override the default timeframe list (e.g. --timeframes 1m 5m 1d).",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: Optional[List[str]] = None) -> None:
     """主函数"""
     # 设置随机种子确保结果可复现
     np.random.seed(42)
-    
+
     print("🚀 优化版最终工作系统 V2.0")
     print("📝 基于原版逻辑，集成向量化优化")
     print("=" * 50)
-    
-    optimized_analyzer = OptimizedFinalWorking()
+
+    args = _parse_args(argv)
+
+    optimized_analyzer = OptimizedFinalWorking(
+        data_dir=args.data_dir,
+        capital=args.capital,
+        timeframes=args.timeframes,
+    )
     results = optimized_analyzer.run_optimized_test()
     
     if results:

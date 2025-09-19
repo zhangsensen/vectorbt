@@ -1,186 +1,73 @@
 # 🚀 向量化投资组合分析器
 
-## 📋 项目概述
+面向多股票、多时间框架、多因子的组合评估平台。系统沿用因子分析器
+的 `MultiTimeframeDataLoader`，在 CTA 与 IC 两种模式之间灵活切换，实现
+大规模因子筛选与成本敏感回测。
 
-这是一个高性能的向量化多股票投资组合分析器，充分利用vectorbt和pandas的向量化优势，实现了真正的批量处理和并行计算。
-
-## ✨ 核心特性
-
-### 🎯 核心优势
-- **真正的向量化**: 批量处理多只股票、多个时间框架、多个因子
-- **高性能**: 相比串行处理提升10-100倍性能
-- **全时间框架支持**: 1m, 2m, 3m, 5m, 10m, 15m, 30m, 1h, 4h, 1d
-- **智能缓存**: 避免重复数据加载，优化内存使用
-- **时间戳输出**: 日志和结果自动创建时间戳文件夹
-
-### 📊 支持的分析
-- **技术因子**: RSI, MACD, 动量ROC, 价格位置, 成交量比率
-- **IC计算**: 向量化信息系数计算
-- **多维度分析**: 股票×时间框架×因子的组合分析
-- **可扩展架构**: 支持扩展到数千个组合
-
-## 🗂 文件结构
+## 🗂 项目结构
 
 ```
-vectorized/portfolio_analyzer/
-├── README.md                           # 📚 项目说明文档
-├── vectorized_multi_stock_analyzer.py  # 🔧 核心分析器
-├── test_vectorized_multi_stock.py      # 🧪 可扩展性测试
-├── logs/                               # 📝 时间戳日志目录
-└── results/                            # 📊 时间戳结果目录
+portfolio_analyzer/
+├── analysis/              # 多股票组合与IC分析脚本
+├── core/                  # 主入口（main_analyzer.py 等）
+├── factors/               # 因子池与工程化工具
+├── strategies/            # CTA 评估器与回测逻辑
+├── tests/                 # 公用组件的单元测试
+├── utils/                 # 类型修复、日志工具
+├── requirements.txt       # 与因子分析器共享
+└── README.md
 ```
 
-## 🚀 快速开始
+所有入口脚本都会自动在本目录下创建 `logs/` 与 `results/` 时间戳文件夹，
+仓库中不再保留历史运行产物，以保持整洁。
 
-### 1. 基本使用
+## 🧩 支持的时间框架
 
-```python
-from vectorized_multi_stock_analyzer import VectorizedMultiStockAnalyzer
+统一支持 `1m, 2m, 3m, 5m, 10m, 15m, 30m, 1h, 2h, 4h, 1d`。
+只需准备 1m/2m/3m/5m/1d 原始 parquet 文件，其余周期由
+`MultiTimeframeDataLoader` 自动重采样生成。
 
-# 创建分析器
-analyzer = VectorizedMultiStockAnalyzer()
-
-# 运行分析
-results = analyzer.run_vectorized_analysis(
-    symbols=['0700.HK', '0005.HK', '0020.HK'],
-    timeframes=['1h', '4h'],
-    factors=['RSI', 'MACD']
-)
-```
-
-### 2. 冒烟测试
+## ⚙️ 快速开始
 
 ```bash
-python3 vectorized_multi_stock_analyzer.py
+python -m venv .venv
+source .venv/bin/activate
+pip install -r longport/vectorized/factor_analyzer/requirements.txt
+
+python -m longport.vectorized.portfolio_analyzer.core.main_analyzer \
+  --data-dir /path/to/data_root \
+  --capital 300000
 ```
 
-### 3. 可扩展性测试
+如需限制分析维度，可附加 `--timeframes 1m 15m 1d` 参数。
+
+运行完成后，`results/final_working_<timestamp>/` 内包含 JSON 输出与 Markdown
+报告，`logs/final_working_<timestamp>/` 记录完整的评估过程。
+
+## 📈 输出指标
+
+- **CTA 模式**：夏普率、胜率、盈亏比、交易次数、成本测试结果。
+- **IC 模式**：信息系数、IC_IR、正向命中率、样本覆盖度。
+- **Top 因子榜**：自动提取表现最好的 10 个因子/时间框架组合。
+
+## 🧪 测试
+
+运行 `pytest` 可以验证共享数据加载器与数据类型修复工具的行为：
 
 ```bash
-python3 test_vectorized_multi_stock.py
+pytest longport/vectorized/portfolio_analyzer/tests
 ```
 
-## 📈 性能表现
+测试在缺少 `pandas`/`numpy` 时会自动跳过，因此在安装完科学计算栈之后
+再执行可获得完整覆盖率。
 
-| 测试场景 | 股票数 | 时间框架 | 因子数 | 执行时间 | 每组合时间 |
-|----------|--------|----------|--------|----------|------------|
-| 基础测试 | 1 | 1 | 2 | 0.24秒 | 0.121秒 |
-| 多时间框架 | 1 | 2 | 2 | 0.02秒 | 0.004秒 |
-| 多股票 | 3 | 1 | 2 | 0.01秒 | 0.007秒 |
-| 综合测试 | 3 | 2 | 2 | 0.03秒 | 0.007秒 |
+## 🔧 常见问题
 
-**关键发现**: 股票数量增加时，向量化效应显著 - 每组合时间可降低**17倍**！
+| 问题 | 解决方案 |
+| --- | --- |
+| 运行提示找不到数据文件 | 确认 `--data-dir` 指向的目录下存在相应时间框架的 parquet 文件 |
+| CTA 模式无有效因子 | 检查日志中的交易成本说明或缩短评估时间范围 |
+| IC 模式指标为 NaN | 使用 `CategoricalDtypeFixer` 清洗原始数据，或检查因子输出是否为空 |
 
-## 🛠 技术架构
-
-### 核心组件
-
-1. **VectorizedMultiStockAnalyzer**: 主分析器类
-   - 批量数据加载
-   - 向量化因子计算
-   - 并行IC计算
-   - 智能缓存管理
-
-2. **数据处理流程**:
-   ```
-   数据加载 → 因子计算 → IC计算 → 结果输出
-      ↓           ↓         ↓        ↓
-   MultiIndex  向量化计算  并行处理  时间戳保存
-   ```
-
-3. **时间戳管理**:
-   - 日志目录: `logs/vectorized_analysis_YYYYMMDD_HHMMSS/`
-   - 结果目录: `results/vectorized_analysis_YYYYMMDD_HHMMSS/`
-
-## 📅 数据配置
-
-- **时间范围**: 2025年3月6日 - 2025年9月1日
-- **数据源**: `/Users/zhangshenshen/longport/vectorbt_workspace/data`
-- **时区**: Asia/Hong_Kong
-
-## 🔧 配置参数
-
-```python
-analyzer = VectorizedMultiStockAnalyzer(
-    data_dir="/path/to/data",      # 数据目录
-    start_date="2025-03-06",       # 开始日期
-    end_date="2025-09-01",         # 结束日期
-    memory_limit_gb=16.0           # 内存限制
-)
-```
-
-## 📊 输出说明
-
-### 1. 控制台输出
-- 实时进度显示
-- 性能统计信息
-- 错误和警告信息
-
-### 2. 日志文件
-- 详细执行日志
-- 时间戳自动创建
-- 完整错误追踪
-
-### 3. 结果文件
-- JSON格式结果
-- 包含所有分析数据
-- 时间戳目录组织
-
-## 🧪 测试验证
-
-### 冒烟测试
-- 单股票快速验证
-- 基础功能检查
-- 100%成功率验证
-
-### 可扩展性测试
-- 多场景性能对比
-- 向量化效应验证
-- 内存使用监控
-
-## 🔄 与旧版对比
-
-| 特性 | 旧版串行 | 新版向量化 | 提升倍数 |
-|------|----------|------------|----------|
-| **数据加载** | 逐个重复 | 批量缓存 | **50x** |
-| **因子计算** | 独立计算 | 向量化 | **100x** |
-| **内存效率** | 峰值占用 | 智能复用 | **5x** |
-| **总体性能** | 线性增长 | 亚线性 | **10-100x** |
-
-## 🚀 发展路线
-
-### 近期目标
-- [x] 全时间框架支持
-- [x] 时间戳输出管理
-- [ ] 更多技术因子
-- [ ] GPU加速支持
-
-### 长期规划
-- [ ] 实时数据流处理
-- [ ] 分布式计算支持
-- [ ] 机器学习因子
-- [ ] 云端部署方案
-
-## 📝 更新日志
-
-### v1.1.0 (2025-09-09)
-- ✅ 支持全时间框架: 1m, 2m, 3m, 5m, 10m, 15m, 30m, 1h, 4h, 1d
-- ✅ 时间戳日志和结果目录
-- ✅ 数据时间范围调整为2025年3月6日-9月1日
-- ✅ 项目重构到独立目录
-
-### v1.0.0 (2025-09-09)
-- 🎉 初始版本发布
-- ✅ 核心向量化分析器
-- ✅ 可扩展性测试框架
-- ✅ 完整文档和示例
-
-## 📞 技术支持
-
-如有问题或建议，请参考代码注释或查看测试示例。
-
----
-
-**项目状态**: 🚀 生产就绪  
-**测试覆盖**: ✅ 100%  
-**性能等级**: 🏆 企业级  
+欢迎在 `core/main_analyzer.py` 中调整配置以适配不同的股票池、时间框架或
+评估模式。
