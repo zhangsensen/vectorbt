@@ -48,3 +48,25 @@ class PerformanceMetrics:
         running_max = np.maximum.accumulate(equity_curve)
         drawdown = (running_max - equity_curve) / running_max
         return float(np.nanmax(drawdown))
+
+    @staticmethod
+    def calculate_information_coefficient(signals: np.ndarray, future_returns: np.ndarray) -> float:
+        """Pearson correlation between signals and subsequent period returns."""
+
+        if signals.size == 0 or future_returns.size == 0:
+            return 0.0
+
+        limit = min(signals.size, future_returns.size)
+        if limit == 0:
+            return 0.0
+
+        aligned_signals = signals[:limit]
+        aligned_returns = future_returns[:limit]
+        mask = ~np.isnan(aligned_signals) & ~np.isnan(aligned_returns)
+        if not np.any(mask):
+            return 0.0
+
+        coefficient = np.corrcoef(aligned_signals[mask], aligned_returns[mask])[0, 1]
+        if np.isnan(coefficient):
+            return 0.0
+        return float(coefficient)

@@ -82,10 +82,16 @@ def main(argv: list[str] | None = None) -> int:
             timeframes=DEFAULT_TIMEFRAMES,
         )
         strategies = combiner.discover_strategies()
+        shortlisted = combiner.last_selected_factors
         for strategy in strategies:
             strategy["creation_date"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         db.save_combination_strategies(strategies)
-        print(f"✅ 发现 {len(strategies)} 个优质策略")
+        print(
+            "✅ 发现 {strategy_count} 个优质策略 (基于 {factor_count} 个领先因子组合)".format(
+                strategy_count=len(strategies),
+                factor_count=len(shortlisted),
+            )
+        )
 
     print("🎉 系统运行完成！")
     return 0

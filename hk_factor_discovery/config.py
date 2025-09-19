@@ -40,9 +40,10 @@ TIMEFRAME_TO_PANDAS_RULE: Dict[str, str] = {
 class CombinerConfig:
     """Configuration for the multi-factor combiner."""
 
-    top_n: int = 30
+    top_n: int = 20
     max_factors: int = 3
     min_sharpe: float = 0.0
+    min_information_coefficient: float = 0.0
 
 
 def timeframe_sort_key(timeframe: str) -> Iterable[int]:

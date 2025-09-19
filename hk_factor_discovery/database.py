@@ -21,6 +21,7 @@ class FactorResult:
     win_rate: float
     profit_factor: float
     max_drawdown: float
+    information_coefficient: float
     exploration_date: str
 
 
@@ -35,6 +36,7 @@ class StrategyResult:
     win_rate: float
     profit_factor: float
     max_drawdown: float
+    average_information_coefficient: float
     creation_date: str
 
 
@@ -65,6 +67,7 @@ class DatabaseManager:
                     win_rate REAL NOT NULL,
                     profit_factor REAL NOT NULL,
                     max_drawdown REAL NOT NULL,
+                    information_coefficient REAL NOT NULL DEFAULT 0,
                     exploration_date TEXT NOT NULL,
                     UNIQUE(symbol, timeframe, factor_name)
                 );
@@ -80,6 +83,7 @@ class DatabaseManager:
                     win_rate REAL NOT NULL,
                     profit_factor REAL NOT NULL,
                     max_drawdown REAL NOT NULL,
+                    average_information_coefficient REAL NOT NULL DEFAULT 0,
                     creation_date TEXT NOT NULL,
                     UNIQUE(symbol, strategy_name)
                 );
@@ -91,7 +95,21 @@ class DatabaseManager:
                 );
                 """
             )
+            self._ensure_column(cur, "factor_exploration_results", "information_coefficient", "REAL NOT NULL DEFAULT 0")
+            self._ensure_column(
+                cur,
+                "combination_strategies",
+                "average_information_coefficient",
+                "REAL NOT NULL DEFAULT 0",
+            )
             conn.commit()
+
+    @staticmethod
+    def _ensure_column(cursor: sqlite3.Cursor, table: str, column: str, definition: str) -> None:
+        cursor.execute(f"PRAGMA table_info({table})")
+        existing = {row[1] for row in cursor.fetchall()}
+        if column not in existing:
+            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
     def reset_database(self) -> None:
         with self._connect() as conn:
@@ -119,6 +137,7 @@ class DatabaseManager:
                     r["win_rate"],
                     r["profit_factor"],
                     r["max_drawdown"],
+                    r.get("information_coefficient", 0.0),
                     r["exploration_date"],
                 )
                 for r in results
@@ -127,8 +146,9 @@ class DatabaseManager:
                 """
                 INSERT OR REPLACE INTO factor_exploration_results (
                     symbol, timeframe, factor_name, sharpe_ratio, stability,
-                    trades_count, win_rate, profit_factor, max_drawdown, exploration_date
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    trades_count, win_rate, profit_factor, max_drawdown,
+                    information_coefficient, exploration_date
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 rows,
             )
@@ -140,7 +160,8 @@ class DatabaseManager:
             cur.execute(
                 """
                 SELECT symbol, timeframe, factor_name, sharpe_ratio, stability,
-                       trades_count, win_rate, profit_factor, max_drawdown, exploration_date
+                       trades_count, win_rate, profit_factor, max_drawdown,
+                       information_coefficient, exploration_date
                 FROM factor_exploration_results
                 WHERE symbol = ?
                 ORDER BY timeframe, sharpe_ratio DESC
@@ -163,6 +184,7 @@ class DatabaseManager:
                     s["win_rate"],
                     s["profit_factor"],
                     s["max_drawdown"],
+                    s.get("average_information_coefficient", 0.0),
                     s["creation_date"],
                 )
                 for s in strategies
@@ -171,8 +193,9 @@ class DatabaseManager:
                 """
                 INSERT OR REPLACE INTO combination_strategies (
                     symbol, strategy_name, factor_combination, sharpe_ratio,
-                    stability, trades_count, win_rate, profit_factor, max_drawdown, creation_date
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    stability, trades_count, win_rate, profit_factor, max_drawdown,
+                    average_information_coefficient, creation_date
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 rows,
             )
@@ -184,7 +207,8 @@ class DatabaseManager:
             cur.execute(
                 """
                 SELECT symbol, strategy_name, factor_combination, sharpe_ratio, stability,
-                       trades_count, win_rate, profit_factor, max_drawdown, creation_date
+                       trades_count, win_rate, profit_factor, max_drawdown,
+                       average_information_coefficient, creation_date
                 FROM combination_strategies
                 WHERE symbol = ?
                 ORDER BY sharpe_ratio DESC

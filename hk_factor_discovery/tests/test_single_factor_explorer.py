@@ -43,6 +43,17 @@ def test_single_factor_explorer_runs_subset():
     results = explorer.explore_all_factors()
     assert len(results) == len(subset)
     sample = next(iter(results.values()))
-    for key in {"symbol", "timeframe", "factor", "sharpe_ratio", "stability", "trades_count", "win_rate", "profit_factor", "max_drawdown"}:
+    for key in {
+        "symbol",
+        "timeframe",
+        "factor",
+        "sharpe_ratio",
+        "stability",
+        "trades_count",
+        "win_rate",
+        "profit_factor",
+        "max_drawdown",
+        "information_coefficient",
+    }:
         assert key in sample
         assert sample[key] is not None

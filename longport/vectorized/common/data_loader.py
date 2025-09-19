@@ -40,7 +40,7 @@ class LoadMetadata:
 
 
 class MultiTimeframeDataLoader:
-    """Load OHLCV parquet files and synthesise higher timeframes when required."""
+    """Load OHLCV parquet files and synthesize higher timeframes when required."""
 
     BASE_COLUMNS: Tuple[str, ...] = ("open", "high", "low", "close", "volume")
     SUPPORTED_TIMEFRAMES: Tuple[str, ...] = (
@@ -102,7 +102,7 @@ class MultiTimeframeDataLoader:
         """Return data for ``symbol`` at ``timeframe``.
 
         If the requested timeframe is unavailable on disk the loader attempts to
-        synthesise it from the best matching lower timeframe according to
+        synthesize it from the best matching lower timeframe according to
         ``resample_map``.
         """
 

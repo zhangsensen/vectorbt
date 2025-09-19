@@ -23,6 +23,7 @@ def test_database_roundtrip(tmp_path):
             "win_rate": 0.55,
             "profit_factor": 1.4,
             "max_drawdown": 0.1,
+            "information_coefficient": 0.07,
             "exploration_date": now,
         }
     ]
@@ -31,6 +32,7 @@ def test_database_roundtrip(tmp_path):
     loaded = manager.load_exploration_results("0700.HK")
     assert loaded
     assert loaded[0].factor_name == "factor_a"
+    assert loaded[0].information_coefficient == pytest.approx(0.07)
 
     strategies = [
         {
@@ -43,6 +45,7 @@ def test_database_roundtrip(tmp_path):
             "win_rate": 0.6,
             "profit_factor": 1.3,
             "max_drawdown": 0.12,
+            "average_information_coefficient": 0.06,
             "creation_date": now,
         }
     ]
@@ -50,3 +53,4 @@ def test_database_roundtrip(tmp_path):
     loaded_strategies = manager.load_combination_strategies("0700.HK")
     assert loaded_strategies
     assert loaded_strategies[0].factor_combination == ["factor_a", "factor_b"]
+    assert loaded_strategies[0].average_information_coefficient == pytest.approx(0.06)

@@ -60,6 +60,7 @@ class SingleFactorExplorer:
             "win_rate": backtest["win_rate"],
             "profit_factor": backtest["profit_factor"],
             "max_drawdown": backtest["max_drawdown"],
+            "information_coefficient": backtest["information_coefficient"],
             "returns": backtest["returns"],
             "equity_curve": backtest["equity_curve"],
             "exploration_date": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
