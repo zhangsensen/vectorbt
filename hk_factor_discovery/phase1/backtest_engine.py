@@ -33,7 +33,7 @@ class SimpleBacktestEngine:
         returns = close.pct_change().fillna(0.0).to_numpy()
         future_returns = close.pct_change().shift(-1).fillna(0.0).to_numpy()
         raw_signals = signals.fillna(0.0).to_numpy(dtype=float)
-        positions = signals.shift(1).fillna(0.0).to_numpy()
+        positions = signals.shift(1).fillna(0.0).to_numpy() * self.allocation
         strategy_returns = returns * positions
 
         trade_changes = np.abs(np.diff(np.concatenate([[0.0], positions])))

@@ -59,7 +59,7 @@ def test_combiner_creates_sorted_strategies():
     assert all("average_information_coefficient" in s for s in strategies)
 
 
-def test_select_top_factors_prioritises_sharpe_and_ic():
+def test_select_top_factors_prioritizes_sharpe_and_ic():
     phase1_results = {
         f"1m_factor_{i}": {
             "symbol": "0700.HK",

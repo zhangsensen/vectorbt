@@ -31,7 +31,7 @@ hk_factor_discovery/
    ```
 
 2. **准备数据目录**
-   - 将 `1m`、`2m`、`3m`、`5m`、`1d` 的 OHLCV Parquet/CSV 数据放在 `symbol/timeframe.parquet` 结构下。
+   - 将 `1m`、`2m`、`3m`、`5m`、`1d` 的 OHLCV Parquet/CSV 数据放在 `symbol/timeframe.parquet` 或 `timeframe/symbol.parquet` 结构下，二者皆受支持。
    - 其余时间框架（10m、15m、30m、1h、2h、4h）由 `HistoricalDataLoader` 自动进行向量化重采样，无需额外文件。
 
 3. **运行命令行入口**
