@@ -15,6 +15,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 import psutil
 
@@ -31,6 +32,12 @@ except ImportError as e:
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+from longport.common.data_loader import MultiTimeframeDataLoader
 
 from factors.factor_pool import AdvancedFactorPool
 from utils.dtype_fixer import CategoricalDtypeFixer
@@ -61,7 +68,7 @@ class FinalWorkingVectorBT:
         
         # 🔥 最终工作配置 - 基于实际测试结果
         self.working_config = {
-            'test_timeframes': ['1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '4h', '1d'],  # 🔥 全时间框架对比测试
+            'test_timeframes': ['1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '1d'],  # 🔥 全时间框架对比测试
             'max_symbols': 54,  # 🔥 全股票对比测试: 54只股票
             'evaluation_mode': 'cta',  # 🔥 新增: CTA回测模式 vs 'ic'模式
             
@@ -82,6 +89,7 @@ class FinalWorkingVectorBT:
         # 初始化组件
         self.factor_pool = AdvancedFactorPool()
         self.categorical_fixer = CategoricalDtypeFixer()
+        self.data_loader = MultiTimeframeDataLoader(self.data_dir)
         
         # 获取测试股票
         self.test_symbols = self._get_test_symbols()
@@ -146,32 +154,20 @@ class FinalWorkingVectorBT:
     def _load_symbol_data(self, symbol: str, timeframe: str) -> pd.DataFrame:
         """加载单个股票数据"""
         try:
-            file_path = os.path.join(self.data_dir, timeframe, f'{symbol}.parquet')
-            if not os.path.exists(file_path):
-                return pd.DataFrame()
-            
-            df = pd.read_parquet(file_path)
-            
-            # 标准化索引和列
-            if not isinstance(df.index, pd.DatetimeIndex):
-                df.index = pd.to_datetime(df.index)
-            
-            # 列名标准化
-            column_mapping = {
-                'Close': 'close', 'Open': 'open', 'High': 'high', 
-                'Low': 'low', 'Volume': 'volume', 'Turnover': 'turnover'
-            }
-            df = df.rename(columns=column_mapping)
-            
-            # 确保基础列存在
-            required_cols = ['open', 'high', 'low', 'close', 'volume']
-            available_cols = [col for col in required_cols if col in df.columns]
-            
-            if len(available_cols) >= 4:
-                return df[available_cols].dropna()
+            df, metadata = self.data_loader.load(symbol, timeframe, return_metadata=True)
+            if df.empty:
+                return df
+
+            if metadata.resampled:
+                self.logger.debug(
+                    f"    🔄 {symbol}: 使用{metadata.source_timeframe}重采样到{timeframe}"
+                    f" (rule={metadata.resample_rule})"
+                )
             else:
-                return pd.DataFrame()
-                
+                self.logger.debug(f"    📥 {symbol}: 直接加载{timeframe}数据")
+
+            return df
+
         except Exception as e:
             self.logger.debug(f"加载{symbol}-{timeframe}失败: {e}")
             return pd.DataFrame()
