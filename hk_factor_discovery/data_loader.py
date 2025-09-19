@@ -69,9 +69,18 @@ class HistoricalDataLoader:
         if self.data_root is None:
             raise FileNotFoundError("No data root provided for raw data loading")
 
-        file_path = self.data_root / symbol / f"{timeframe}.parquet"
-        if not file_path.exists():
-            raise FileNotFoundError(f"Missing data file: {file_path}")
+        timeframe_first = self.data_root / timeframe / f"{symbol}.parquet"
+        symbol_first = self.data_root / symbol / f"{timeframe}.parquet"
+
+        if timeframe_first.exists():
+            file_path = timeframe_first
+        elif symbol_first.exists():
+            file_path = symbol_first
+        else:
+            raise FileNotFoundError(
+                f"Missing data file for {symbol} {timeframe}. "
+                "Checked both timeframe and symbol directories."
+            )
 
         return pd.read_parquet(file_path)
 

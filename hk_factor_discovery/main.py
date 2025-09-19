@@ -26,7 +26,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--reset", action="store_true", help="重置数据库")
     parser.add_argument(
         "--data-root",
-        help="可选的本地数据目录，目录下按 symbol/timeframe.parquet 存放",
+        help="可选的本地数据目录，支持 symbol/timeframe.parquet 或 timeframe/symbol.parquet 布局",
     )
     return parser
 

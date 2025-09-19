@@ -21,7 +21,7 @@ def _timeframe_to_pandas_freq(timeframe: str) -> str:
         raise ValueError(f"Invalid timeframe value: {timeframe}")
 
     multiplier = int(value_part)
-    unit_map = {"m": "T", "h": "H", "d": "D"}
+    unit_map = {"m": "min", "h": "H", "d": "D"}
     if unit not in unit_map:
         raise ValueError(f"Unsupported timeframe unit: {timeframe}")
 

@@ -17,7 +17,7 @@ def sample_dataframes(tmp_path):
     direct_path = direct_dir / f"{symbol}.parquet"
     direct_path.touch()
 
-    direct_index = pandas.date_range("2024-01-01 09:30", periods=4, freq="2T")
+    direct_index = pandas.date_range("2024-01-01 09:30", periods=4, freq="2min")
     direct_df = pandas.DataFrame(
         {
             "Open": np.arange(100, 104, dtype=float),
@@ -34,7 +34,7 @@ def sample_dataframes(tmp_path):
     base_path = base_dir_5m / f"{symbol}.parquet"
     base_path.touch()
 
-    base_index = pandas.date_range("2024-01-01 09:30", periods=6, freq="5T")
+    base_index = pandas.date_range("2024-01-01 09:30", periods=6, freq="5min")
     base_df = pandas.DataFrame(
         {
             "Open": np.linspace(200, 205, 6),
@@ -81,11 +81,11 @@ def test_resample_from_lower_timeframe(monkeypatch, tmp_path, sample_dataframes)
 
     assert meta.resampled
     assert meta.source_timeframe == "5m"
-    assert meta.resample_rule == "10T"
+    assert meta.resample_rule == "10min"
 
     expected = (
         base_df.rename(columns=str.lower)
-        .resample("10T", label="right", closed="right")
+        .resample("10min", label="right", closed="right")
         .agg({"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"})
         .dropna()
     )
