@@ -1,0 +1,4 @@
+vectorbt>=0.28.1
+pyarrow
+anywidget
+psutil
