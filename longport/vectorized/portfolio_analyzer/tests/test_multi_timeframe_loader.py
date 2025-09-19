@@ -4,7 +4,7 @@ pandas = pytest.importorskip("pandas")
 pd_testing = pytest.importorskip("pandas.testing")
 np = pytest.importorskip("numpy")
 
-from longport.common.data_loader import MultiTimeframeDataLoader
+from longport.vectorized.common.data_loader import MultiTimeframeDataLoader
 
 
 @pytest.fixture()

@@ -33,10 +33,10 @@
 
 ### 6. ✅ 项目文件夹重构
 - **要求**: 新建文件夹放入项目
-- **实现**: 创建`vectorized_portfolio_analyzer/`独立目录
+- **实现**: 创建`vectorized/portfolio_analyzer/`独立目录
 - **结构**: 
   ```
-  vectorized_portfolio_analyzer/
+  vectorized/portfolio_analyzer/
   ├── README.md                           # 项目说明
   ├── vectorized_multi_stock_analyzer.py  # 核心分析器
   ├── test_vectorized_multi_stock.py      # 可扩展性测试

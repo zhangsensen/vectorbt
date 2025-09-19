@@ -44,7 +44,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
-from longport.common.data_loader import MultiTimeframeDataLoader
+from longport.vectorized.common.data_loader import MultiTimeframeDataLoader
 
 from factors.factor_pool import AdvancedFactorPool
 from utils.dtype_fixer import CategoricalDtypeFixer
@@ -68,7 +68,7 @@ class OptimizedFinalWorking:
     基于原版逻辑，集成向量化优化
     """
     
-    def __init__(self, data_dir: str = "/Users/zhangshenshen/longport/vectorized_factor_analyzer_v2/data", capital: float = 300000):
+    def __init__(self, data_dir: str = "/Users/zhangshenshen/longport/vectorized/factor_analyzer/data", capital: float = 300000):
         self.data_dir = data_dir
         self.capital = capital
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

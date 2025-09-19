@@ -3,7 +3,7 @@ import pytest
 pandas = pytest.importorskip("pandas")
 np = pytest.importorskip("numpy")
 
-from longport.vectorized_portfolio_analyzer.utils.dtype_fixer import (
+from longport.vectorized.portfolio_analyzer.utils.dtype_fixer import (
     CategoricalDtypeFixer,
 )
 

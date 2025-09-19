@@ -1,7 +1,7 @@
 # 📊 Vectorized Factor Analyzer V2 项目结构分析报告
 
 **生成时间**: 2025-09-13  
-**分析范围**: `/Users/zhangshenshen/longport/vectorized_factor_analyzer_v2`  
+**分析范围**: `/Users/zhangshenshen/longport/vectorized/factor_analyzer`
 **项目类型**: 港股智能量化分析系统  
 **技术栈**: VectorBT + TA-Lib + Pandas + NumPy
 
@@ -26,7 +26,7 @@
 ## 📁 目录结构详解
 
 ```
-vectorized_factor_analyzer_v2/
+vectorized/factor_analyzer/
 ├── 🎯 核心程序文件
 │   ├── optimized_final_working.py     # 主程序（推荐使用）
 │   ├── vectorbt_fixed_working.py      # VectorBT修复版
@@ -298,7 +298,7 @@ LIQUIDITY_TIER = {
 ### 推荐运行方式
 ```bash
 # 进入项目目录
-cd /Users/zhangshenshen/longport/vectorized_factor_analyzer_v2
+cd /Users/zhangshenshen/longport/vectorized/factor_analyzer
 
 # 激活虚拟环境
 source ../venv/bin/activate

@@ -43,7 +43,7 @@
 ### 运行命令
 ```bash
 # 进入项目目录
-cd /Users/zhangshenshen/longport/vectorized_factor_analyzer_v2
+cd /Users/zhangshenshen/longport/vectorized/factor_analyzer
 
 # 激活虚拟环境
 source ../venv/bin/activate

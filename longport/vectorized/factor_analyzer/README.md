@@ -13,7 +13,7 @@
 ## 📁 简单的项目结构
 
 ```
-vectorized_factor_analyzer_v2/
+vectorized/factor_analyzer/
 ├── strategies/          # 核心分析策略
 ├── factors/            # 技术指标计算
 ├── utils/              # 工具函数
@@ -33,7 +33,7 @@ vectorized_factor_analyzer_v2/
 ### 第二步：运行分析
 ```bash
 # 进入项目目录
-cd /Users/zhangshenshen/longport/vectorized_factor_analyzer_v2
+cd /Users/zhangshenshen/longport/vectorized/factor_analyzer
 
 # 运行主程序 (最简单的方式)
 python optimized_final_working.py

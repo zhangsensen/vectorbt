@@ -23,7 +23,7 @@ python --version
 #### 2. 安装必要的软件包
 ```bash
 # 进入项目目录
-cd /Users/zhangshenshen/longport/vectorized_factor_analyzer_v2
+cd /Users/zhangshenshen/longport/vectorized/factor_analyzer
 
 # 安装依赖
 pip install -r requirements.txt

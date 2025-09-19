@@ -4,7 +4,7 @@
 
 ### 第1步：进入项目目录
 ```bash
-cd /Users/zhangshenshen/longport/vectorized_factor_analyzer_v2
+cd /Users/zhangshenshen/longport/vectorized/factor_analyzer
 ```
 
 ### 第2步：安装依赖 (如果还没安装)
