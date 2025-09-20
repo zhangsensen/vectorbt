@@ -195,12 +195,27 @@ class FinalWorkingVectorBT:
         result = num_vals / den_vals
         result = np.where(np.isinf(result), fill_value, result)
         result = np.where(np.isnan(result), fill_value, result)
-        
+
         # 返回pandas Series如果输入是Series
         if hasattr(numerator, 'index'):
             return pd.Series(result, index=numerator.index)
         else:
             return result
+
+    def _select_sharpe_column(self, df: pd.DataFrame) -> Optional[str]:
+        """选择最佳夏普率列，优先使用成本现实化后的夏普率"""
+        if df is None or df.empty:
+            return None
+
+        for candidate in ('sharpe_cost', 'sharpe_mean', 'sharpe'):
+            if candidate in df.columns:
+                return candidate
+
+        for col in df.columns:
+            if isinstance(col, str) and 'sharpe' in col.lower():
+                return col
+
+        return None
     
     def _align_multi_stock_data(self, symbol_data: Dict[str, pd.DataFrame], symbol_factors: Dict[str, pd.DataFrame]) -> Tuple[Dict, Dict, pd.DatetimeIndex]:
         """🔥 核心修复：多股票数据对齐到共同时间范围"""
@@ -724,63 +739,54 @@ class FinalWorkingVectorBT:
             self.logger.debug(f"      交易次数统计: 均值={trade_stats['mean']:.1f}, 最大值={trade_stats['max']:.0f}, 中位数={trade_stats['50%']:.0f}")
         
         factor_ranking = cta_evaluator.rank_factors(
-            cta_results, 
+            cta_results,
             rank_by='sharpe'  # 使用修复版的内置过滤条件
         )
-        
+
+        sharpe_col = self._select_sharpe_column(factor_ranking)
+
         # 5. 统计有效因子
         if factor_ranking.empty:
             valid_factors = pd.DataFrame()
+        elif sharpe_col:
+            valid_factors = factor_ranking[factor_ranking[sharpe_col] >= 0.05]
         else:
-            # 检查列名是否存在
-            sharpe_col = 'sharpe_mean' if 'sharpe_mean' in factor_ranking.columns else 'sharpe'
-            if sharpe_col in factor_ranking.columns:
-                valid_factors = factor_ranking[factor_ranking[sharpe_col] >= 0.05]  # 修复: 提高阈值到0.05
-            else:
-                valid_factors = factor_ranking.head(10)  # 取前10个因子作为有效因子
+            valid_factors = factor_ranking.head(10)  # 取前10个因子作为有效因子
         
         self.logger.info(f"  ✅ {timeframe} 发现{len(valid_factors)}个优质因子 (夏普≥0.05，修复阈值)")
         
         # 🔍 上线前最后体检：Top5因子人工抽查
         if not factor_ranking.empty and len(factor_ranking) >= 1:
             top5 = factor_ranking.head(5)
-            required_cols = ['factor', 'sharpe_mean', 'trades_sum', 'win_rate_mean']
-            available_cols = [col for col in required_cols if col in top5.columns]
-            
-            # 如果列名不同，尝试找到对应的列
-            col_mapping = {
-                'sharpe_mean': 'sharpe' if 'sharpe' in top5.columns else 'sharpe_mean',
-                'trades_sum': 'trades' if 'trades' in top5.columns else 'trades_sum', 
-                'win_rate_mean': 'win_rate' if 'win_rate' in top5.columns else 'win_rate_mean'
-            }
-            
-            display_cols = ['factor'] + [col_mapping.get(col, col) for col in required_cols[1:] if col_mapping.get(col, col) in top5.columns]
+            trades_col = 'trades_sum' if 'trades_sum' in top5.columns else 'trades' if 'trades' in top5.columns else None
+            winrate_col = 'win_rate_mean' if 'win_rate_mean' in top5.columns else 'win_rate' if 'win_rate' in top5.columns else None
+
+            display_cols = ['factor']
+            for col in (sharpe_col, trades_col, winrate_col):
+                if col and col in top5.columns and col not in display_cols:
+                    display_cols.append(col)
             
             self.logger.info(f"\n🔍 {timeframe} Top5因子人工抽查:")
             self.logger.info("\n" + top5[display_cols].to_string(index=False))
             
             # 异常值警告
-            sharpe_col = col_mapping.get('sharpe_mean', 'sharpe_mean')
-            trades_col = col_mapping.get('trades_sum', 'trades_sum')
-            winrate_col = col_mapping.get('win_rate_mean', 'win_rate_mean')
-            
-            if sharpe_col in top5.columns:
+            if sharpe_col and sharpe_col in top5.columns:
                 max_sharpe = top5[sharpe_col].max()
                 min_sharpe = top5[sharpe_col].min()
                 if max_sharpe > 0.8:
                     self.logger.warning(f"⚠️ 发现超高夏普率{max_sharpe:.3f}>0.8，可能过拟合！")
                 elif min_sharpe < 0.02:
                     self.logger.warning(f"⚠️ 发现超低夏普率{min_sharpe:.3f}<0.02，可能是噪音！")
-                    
-            if trades_col in top5.columns:
+
+            if trades_col and trades_col in top5.columns:
                 min_trades = top5[trades_col].min()
                 max_trades = top5[trades_col].max()
                 if min_trades < 20:
                     self.logger.warning(f"⚠️ 发现超低交易次数{min_trades}<20，样本不足！")
                 elif max_trades > 2000:
                     self.logger.warning(f"⚠️ 发现超高交易次数{max_trades}>2000，信号过密！")
-                    
-            if winrate_col in top5.columns:
+
+            if winrate_col and winrate_col in top5.columns:
                 max_winrate = top5[winrate_col].max()
                 if max_winrate > 0.6:
                     self.logger.warning(f"⚠️ 发现超高胜率{max_winrate:.1%}>60%，复查是否偷价！")
@@ -796,7 +802,7 @@ class FinalWorkingVectorBT:
                 'total_evaluations': len(cta_results),
                 'valid_factors_count': len(valid_factors),
                 'best_factor': factor_ranking.iloc[0]['factor'] if not factor_ranking.empty else None,
-                'best_sharpe': factor_ranking.iloc[0]['sharpe_mean'] if not factor_ranking.empty else 0
+                'best_sharpe': float(factor_ranking.iloc[0][sharpe_col]) if (not factor_ranking.empty and sharpe_col and sharpe_col in factor_ranking.columns and pd.notna(factor_ranking.iloc[0][sharpe_col])) else 0
             }
         }
     
@@ -880,28 +886,41 @@ class FinalWorkingVectorBT:
         timeframe_results = results.get('timeframe_results', {})
         
         if timeframe_results:
-            report.append("| 时间框架 | 有效因子数 | 优秀因子 | 最佳IC |")
-            report.append("|----------|------------|----------|--------|")
-            
             total_factors = 0
             # 🔥 根据评估模式生成不同的统计表
             evaluation_mode = results.get('working_config', {}).get('evaluation_mode', 'ic')
-            
+
+            cta_uses_cost = False
+            if evaluation_mode == 'cta':
+                for result_data in timeframe_results.values():
+                    factor_ranking = result_data.get('factor_ranking', pd.DataFrame())
+                    if self._select_sharpe_column(factor_ranking) == 'sharpe_cost':
+                        cta_uses_cost = True
+                        break
+
+                sharpe_header = "最佳夏普(扣费)" if cta_uses_cost else "最佳夏普"
+                report.append(f"| 时间框架 | 有效因子数 | 优秀因子 | {sharpe_header} |")
+                report.append("|----------|------------|----------|----------|")
+            else:
+                report.append("| 时间框架 | 有效因子数 | 优秀因子 | 最佳IC |")
+                report.append("|----------|------------|----------|--------|")
+
             for tf, result_data in timeframe_results.items():
                 if evaluation_mode == 'cta':
                     # CTA模式: 处理CTA结果
                     factor_count = result_data['summary']['valid_factors_count']
                     total_factors += factor_count
-                    
+
                     # 统计优秀因子 (夏普>0.5)
                     valid_factors = result_data.get('valid_factors', pd.DataFrame())
-                    if not valid_factors.empty and 'sharpe_mean' in valid_factors.columns:
-                        excellent_factors = len(valid_factors[valid_factors['sharpe_mean'] > 0.5])
-                        best_sharpe = valid_factors['sharpe_mean'].max() if not valid_factors.empty else 0
+                    sharpe_col = self._select_sharpe_column(valid_factors)
+                    if not valid_factors.empty and sharpe_col:
+                        excellent_factors = len(valid_factors[valid_factors[sharpe_col] > 0.5])
                     else:
                         excellent_factors = 0
-                        best_sharpe = 0
-                    
+
+                    best_sharpe = result_data.get('summary', {}).get('best_sharpe', 0)
+
                     report.append(f"| {tf} | {factor_count} | {excellent_factors} | {best_sharpe:.3f} |")
                 else:
                     # IC模式: 原逻辑
@@ -927,28 +946,33 @@ class FinalWorkingVectorBT:
             
             if evaluation_mode == 'cta':
                 # CTA模式: 提取因子排名数据
+                sharpe_label = "夏普率(扣费)" if cta_uses_cost else "夏普率"
                 for tf, result_data in timeframe_results.items():
                     factor_ranking = result_data.get('factor_ranking', pd.DataFrame())
+                    sharpe_col = self._select_sharpe_column(factor_ranking)
                     if not factor_ranking.empty:
                         for _, row in factor_ranking.head(10).iterrows():
+                            sharpe_value = row.get(sharpe_col) if sharpe_col else row.get('sharpe_mean')
+                            if pd.isna(sharpe_value):
+                                sharpe_value = 0
                             all_factors.append({
                                 'name': row.get('factor', 'unknown'),
                                 'timeframe': tf,
-                                'sharpe': row.get('sharpe_mean', 0),
+                                'sharpe': float(sharpe_value) if sharpe_value is not None else 0,
                                 'win_rate': row.get('win_rate_mean', 0),
                                 'trades': row.get('trades_sum', 0)
                             })
-                
+
                 if all_factors:
                     all_factors.sort(key=lambda x: x['sharpe'], reverse=True)
-                    
+
                     report.extend([
                         "## 🏆 最佳因子 (Top 10)",
                         "",
-                        "| 排名 | 因子名称 | 时间框架 | 夏普率 | 胜率 | 交易次数 |",
+                        f"| 排名 | 因子名称 | 时间框架 | {sharpe_label} | 胜率 | 交易次数 |",
                         "|------|----------|----------|--------|------|----------|"
                     ])
-                    
+
                     for i, factor in enumerate(all_factors[:10], 1):
                         report.append(
                             f"| {i} | {factor['name']} | {factor['timeframe']} | "
