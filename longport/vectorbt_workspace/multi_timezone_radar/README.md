@@ -2,7 +2,7 @@
 
 ## 🚀 项目概述
 
-这是一个专业的港股全时间框架技术因子分析系统，支持53只港股的完整分析，具有断点续跑、内存保护等企业级特性。
+这是一个专业的港股全时间框架技术因子分析系统，支持54只港股的完整分析，具有断点续跑、内存保护等企业级特性。
 
 ### 🎯 核心特性
 
@@ -21,10 +21,15 @@ multi_timezone_radar/
 ├── core/                          # 核心分析模块
 │   ├── vectorbt_wfo_analyzer.py       # 向量化回测分析器
 │   └── single_stock_wfo.py           # 单股票WFO分析
-├── run_53_stocks_sequential.py     # 主分析脚本
-├── smoke_test.py                  # 冒烟测试脚本
-├── test_timezone_fix.py           # 时区修复测试
+├── run_0700_full_analysis.py      # 0700.HK 单股全量分析脚本
+├── run_53_stocks_sequential.py    # 顺序分析脚本（可指定股票范围）
+├── run_54_stocks_analysis.py      # 54只股票批量分析脚本
 ├── run.sh                         # 一键启动脚本
+├── docs/                          # 操作与技术文档
+├── PROJECT_DOCUMENTATION.md       # 技术实现说明
+├── PROJECT_SUMMARY.md             # 项目总结报告
+├── USER_GUIDE.md                  # 使用指南
+├── requirements.txt               # 依赖清单
 ├── logs/                          # 日志文件
 │   ├── individual_analysis/         # 单股票分析结果
 │   └── sequential_analysis_summary_*/ # 总体分析报告
@@ -40,11 +45,11 @@ multi_timezone_radar/
 - 内存：建议16GB以上
 - 存储：建议10GB以上可用空间
 
-### 2. 冒烟测试
-首先运行冒烟测试验证系统是否正常：
+### 2. 快速自检
+运行单股票全量分析脚本，快速确认依赖安装和数据路径是否正确：
 
 ```bash
-python smoke_test.py
+python run_0700_full_analysis.py
 ```
 
 ### 3. 运行分析
@@ -59,17 +64,22 @@ python run_53_stocks_sequential.py --stock 0005.HK
 python run_53_stocks_sequential.py --start 0 --end 53
 ```
 
-#### 方式三：一键启动（后台运行，推荐）
+#### 方式三：全量批处理（前台运行）
+```bash
+python run_54_stocks_analysis.py
+```
+
+#### 方式四：一键启动（后台运行，推荐）
 ```bash
 ./run.sh
 ```
 
-#### 方式四：断点续跑
+#### 方式五：断点续跑
 ```bash
-python run_53_stocks_sequential.py --resume logs/sequential_analysis_summary_20250909_xxxxxx/checkpoint.json
+python run_53_stocks_sequential.py --resume logs/sequential_analysis_summary_<timestamp>/checkpoint.json
 ```
 
-#### 方式五：监控运行状态
+#### 方式六：监控运行状态
 ```bash
 # 查看正在运行的分析
 screen -r hk53_analysis
@@ -81,7 +91,7 @@ tail -f logs/master_YYYYMMDD_HHMMSS.log
 top -p $(pgrep -f run_53_stocks_sequential.py)
 ```
 
-#### 方式六：停止分析
+#### 方式七：停止分析
 ```bash
 # 优雅停止
 screen -S hk53_analysis -X quit
@@ -253,7 +263,7 @@ logs/
 #### Prevention Measures
 - Added comprehensive error handling to prevent crashes
 - Implemented logging to identify when data loses datetime index
-- Created smoke test for continuous verification
+- Added quick self-check command for continuous verification
 - Added CI integration to prevent regression
 
 ---
@@ -277,11 +287,11 @@ logs/
 - 📊 **滚动日志系统**: 防止单个日志文件过大
 - 🚀 **一键启动脚本**: 支持后台运行，方便管理
 - 🔧 **时区处理优化**: 完善Unix时间戳转换逻辑
-- 📈 **冒烟测试脚本**: 快速验证系统功能
+- 📈 **快速自检脚本**: 快速验证系统功能
 - 📋 **监控和停止**: 完整的生产环境管理工具
 
 ### v2.0 (2025-09-07)
-- 🎯 **核心分析功能**: 53只港股全时间框架技术因子分析
+- 🎯 **核心分析功能**: 54只港股全时间框架技术因子分析
 - 📊 **多因子验证**: RSI、MACD、Momentum等技术指标
 - 🌐 **时区统一处理**: 自动处理Unix时间戳转换
 - 💰 **真实交易成本**: 港股实际交易成本计算
